@@ -77,6 +77,8 @@ class FunSetSuite extends FunSuite {
     val s1 = singletonSet(1)
     val s2 = singletonSet(2)
     val s3 = singletonSet(3)
+
+    def listSet(set: List[Int]): Set = (elem) => set.contains(elem)
   }
 
   /**
@@ -86,7 +88,7 @@ class FunSetSuite extends FunSuite {
    * Once you finish your implementation of "singletonSet", exchange the
    * function "ignore" by "test".
    */
-  ignore("singletonSet(1) contains 1") {
+  test("singletonSet(1) contains 1") {
     
     /**
      * We create a new instance of the "TestSets" trait, this gives us access
@@ -98,10 +100,12 @@ class FunSetSuite extends FunSuite {
        * the test fails. This helps identifying which assertion failed.
        */
       assert(contains(s1, 1), "Singleton")
+      assert(contains(s2,2),"Singleton2")
+      assert(contains(s3,3),"Singleton3")
     }
   }
 
-  ignore("union contains all elements") {
+  test("union contains all elements") {
     new TestSets {
       val s = union(s1, s2)
       assert(contains(s, 1), "Union 1")
@@ -109,4 +113,46 @@ class FunSetSuite extends FunSuite {
       assert(!contains(s, 3), "Union 3")
     }
   }
+
+  test("intersection contains no elements") {
+    new TestSets {
+      val s = intersect(s1,s3)
+      assert(!contains(s,1),"Intersect 1")
+      assert(!contains(s,2),"Intersect 2")
+    }
+  }
+
+  test("intersection contains 2 elements") {
+    new TestSets {
+      val s = intersect(listSet(List(1,2,3)),listSet(List(2,3,4)))
+      assert(!contains(s,1),"No Intersect 1")
+      assert(contains(s,2),"Intersect 2")
+      assert(contains(s,3),"Intersect 3")
+      assert(!contains(s,4),"No Intersect 4")
+    }
+  }
+
+  test("diff contains 2 elements") {
+    new TestSets {
+      val s = diff(listSet(List(0,1,2,3)),listSet(List(2,3,4)))
+      assert(contains(s,0),"Diff 0")
+      assert(contains(s,1),"Diff 1")
+      assert(!contains(s,2),"Diff 2")
+      assert(!contains(s,3),"No Diff 3")
+      assert(!contains(s,4),"No Diff 4")
+    }
+  }
+
+  test("filter even numbers") {
+    new TestSets {
+      val s = filter(listSet(List(1,2,3,4,5,6)), (elem) => elem % 2 == 0)
+      assert(!contains(s,1),"odd")
+      assert(contains(s,2),"even")
+      assert(!contains(s,3),"odd")
+      assert(contains(s,4),"even")
+      assert(!contains(s,5),"odd")
+      assert(contains(s,4),"even")
+    }
+  }
+
 }
