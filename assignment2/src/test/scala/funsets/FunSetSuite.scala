@@ -155,4 +155,42 @@ class FunSetSuite extends FunSuite {
     }
   }
 
+  test("forall even number") {
+    new TestSets {
+      val s = forall(listSet(List(2,4,6)), (elem) => elem % 2 == 0)
+      assert(s,"all even")
+    }
+  }
+
+  test("forall not all even number") {
+    new TestSets {
+      val s = forall(listSet(List(1,2,3,4,5,6)), (elem) => elem % 2 == 0)
+      assert(!s,"all even")
+    }
+  }
+
+  test("exists even number") {
+    new TestSets {
+      val s = exists(listSet(List(1,2,3,4,5,6)), (elem) => elem % 2 == 0)
+      assert(s,"even")
+    }
+  }
+
+  test("exists no even number") {
+    new TestSets {
+      val s = exists(listSet(List(1,3,5)), (elem) => elem % 2 == 0)
+      assert(!s,"no even numbers")
+    }
+  }
+
+  test("map square of numbers") {
+    new TestSets {
+      val s = map(listSet(List(2,3,5)), (elem) => elem * elem)
+      assert(s(4),"2 found")
+      assert(s(9),"3 found")
+      assert(s(25),"5 found")
+      assert(!s(2),"sqrt 2 not found")
+      assert(!s(16),"not found")
+    }
+  }
 }
