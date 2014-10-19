@@ -39,6 +39,19 @@ class HuffmanSuite extends FunSuite {
     }
   }
 
+  test("times of nil") {
+    new TestTrees {
+      assert(times(Nil) === List())
+    }
+  }
+
+  test("combine of singleton or nil") {
+    new TestTrees {
+      assert(combine(Nil) === Nil)
+      assert(combine(List(Leaf('a',2))) === List(Leaf('a',2)))
+    }
+  }
+
   test("string2chars(\"hello, world\")") {
     assert(string2Chars("hello, world") === List('h', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd'))
   }
@@ -50,6 +63,14 @@ class HuffmanSuite extends FunSuite {
   test("combine of some leaf list") {
     val leaflist = List(Leaf('e', 1), Leaf('t', 2), Leaf('x', 4))
     assert(combine(leaflist) === List(Fork(Leaf('e',1),Leaf('t',2),List('e', 't'),3), Leaf('x',4)))
+  }
+
+  test("createCodeTree(someText)' gives an optimal encoding, the number of bits when encoding 'someText' is minimal") {
+    new TestTrees {
+      val foo = createCodeTree(string2Chars("someText"))
+      println(foo)
+      assert(encode(createCodeTree(string2Chars("someText")))(string2Chars("someText")).length === 22)
+    }
   }
 
   test("decode and encode a very short text should be identity") {

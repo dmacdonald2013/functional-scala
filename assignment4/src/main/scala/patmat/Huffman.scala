@@ -86,14 +86,7 @@ object Huffman {
    *   }
    */
   def times(chars: List[Char]): List[(Char, Int)] = {
-    if (chars.tail.isEmpty) List((chars.head,1))
-    else matches(chars.head,times(chars.tail))
-  }
-
-  def matches(char: Char, results: List[(Char,Int)]): List[(Char,Int)] = {
-    if (results.isEmpty) List((char,1))
-    else if (char == results.head._1) List((results.head._1,results.head._2+1)) ::: results.tail
-    else results ::: matches(char,results.tail)
+    chars.distinct.map( c => (c,chars.count( t => t == c )) )
   }
 
   /**
@@ -104,13 +97,13 @@ object Huffman {
    * of a leaf is the frequency of the character.
    */
   def makeOrderedLeafList(freqs: List[(Char, Int)]): List[Leaf] = {
-    freqs.sortBy( f => f._2 ).map( l => Leaf(l._1,l._2) )
+    freqs.sortBy(_._2).map( l => Leaf(l._1,l._2) )
   }
 
   /**
    * Checks whether the list `trees` contains only one single code tree.
    */
-  def singleton(trees: List[CodeTree]): Boolean = trees.nonEmpty && trees.tail.isEmpty
+  def singleton(trees: List[CodeTree]): Boolean = trees.size == 1
 
   /**
    * The parameter `trees` of this function is a list of code trees ordered
@@ -125,15 +118,23 @@ object Huffman {
    * unchanged.
    */
   def combine(trees: List[CodeTree]): List[CodeTree] = {
-    val first: (List[Char],Int) = trees.head match {
-      case Fork(l,r,c,w) => (c,w)
-      case Leaf(c,w) => (List(c),w)
+    if (trees == Nil || trees.size < 2) trees
+    else {
+      val first: (List[Char], Int) = trees(0) match {
+        case Fork(l, r, c, w) => (c, w)
+        case Leaf(c, w) => (List(c), w)
+      }
+      val second: (List[Char], Int) = trees(1) match {
+        case Fork(l, r, c, w) => (c, w)
+        case Leaf(c, w) => (List(c), w)
+      }
+      (Fork(trees(0), trees(1), first._1 ::: second._1, first._2 + second._2) :: trees.drop(2)).sortBy( t =>
+        t match {
+          case Fork(l, r, c, w) => w
+          case Leaf(c, w) => w
+        }
+      )
     }
-    val second: (List[Char],Int) = trees.tail.head match {
-      case Fork(l,r,c,w) => (c,w)
-      case Leaf(c,w) => (List(c),w)
-    }
-    List(Fork(trees.head,trees.tail.head,first._1 ::: second._1,first._2 + second._2)) ::: trees.tail.tail
   }
 
   /**
@@ -177,7 +178,7 @@ object Huffman {
   def decode(tree: CodeTree, bits: List[Bit]): List[Char] = {
     if (bits.isEmpty) List()
     else {
-      val (char,remainingBits)  = findLeaf(tree,bits,List())
+      val (char,remainingBits) = findLeaf(tree,bits,List())
       char :: decode(tree,remainingBits)
     }
   }
