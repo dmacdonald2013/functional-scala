@@ -26,7 +26,7 @@ object Anagrams {
   /** The dictionary is simply a sequence of words.
    *  It is predefined and obtained as a sequence using the utility method `loadDictionary`.
    */
-  val dictionary: List[Word] = loadDictionary
+  val dictionary: List[Word] = List("a","b") //loadDictionary
 
   /** Converts the word into its character occurence list.
    *  
@@ -87,7 +87,15 @@ object Anagrams {
    *  Note that the order of the occurrence list subsets does not matter -- the subsets
    *  in the example above could have been displayed in some other order.
    */
-  def combinations(occurrences: Occurrences): List[Occurrences] = ???
+  def combinations(occurrences: Occurrences): List[Occurrences] = {
+    occurrences match {
+      case Nil => List(List())
+      case x :: xs => {
+        val thisOne = for ( i <- combinations(xs); j <- 1 to x._2) yield (x._1,j) :: i
+        thisOne ::: combinations(xs)
+      }
+    }
+  }
 
   /** Subtracts occurrence list `y` from occurrence list `x`.
    * 
@@ -99,7 +107,9 @@ object Anagrams {
    *  Note: the resulting value is an occurrence - meaning it is sorted
    *  and has no zero-entries.
    */
-  def subtract(x: Occurrences, y: Occurrences): Occurrences = ???
+  def subtract(x: Occurrences, y: Occurrences): Occurrences = x.foldLeft(y.toMap)((l,r) =>
+    if (l contains r._1) (l - r._1).updated(r._1,r._2 - (l apply r._1))
+    else l.updated(r._1,r._2)).toList.filter( x => x._2 > 0).sortBy(x => x._1)
 
   /** Returns a list of all anagram sentences of the given sentence.
    *  
