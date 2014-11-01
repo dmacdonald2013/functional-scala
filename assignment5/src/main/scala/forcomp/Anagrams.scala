@@ -26,7 +26,7 @@ object Anagrams {
   /** The dictionary is simply a sequence of words.
    *  It is predefined and obtained as a sequence using the utility method `loadDictionary`.
    */
-  val dictionary: List[Word] = List("a","b") //loadDictionary
+  val dictionary: List[Word] = loadDictionary
 
   /** Converts the word into its character occurence list.
    *  
@@ -91,7 +91,7 @@ object Anagrams {
     occurrences match {
       case Nil => List(List())
       case x :: xs => {
-        val thisOne = for ( i <- combinations(xs); j <- 1 to x._2) yield (x._1,j) :: i
+        val thisOne = for ( i <- combinations(xs); j <- 1 to x._2) yield ((x._1,j) :: i).sortBy(x => x._1)
         thisOne ::: combinations(xs)
       }
     }
