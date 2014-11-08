@@ -40,7 +40,7 @@ class BloxorzSuite extends FunSuite {
     val optsolution = List(Right, Right, Down, Right, Right, Right, Down)
   }
 
-  test("terrain function level 1") {
+  /*test("terrain function level 1") {
     new Level1 {
       assert(terrain(Pos(0,0)), "0,0")
       assert(!terrain(Pos(4,11)), "4,11")
@@ -57,11 +57,31 @@ class BloxorzSuite extends FunSuite {
     new Level1 {
       assert(solve(solution) == Block(goal, goal))
     }
-  }
+  }*/
 
   test("optimal solution length for level 1") {
     new Level1 {
-      assert(solution.length == optsolution.length)
+      assert(solution.length === optsolution.length)
+    }
+  }
+
+  test("neighboursWithHistory") {
+    new Level1 {
+      assert(neighborsWithHistory(Block(Pos(1,1),Pos(1,1)), List(Left,Up)).toSet === Set(
+        (Block(Pos(1,2),Pos(1,3)), List(Right,Left,Up)),
+        (Block(Pos(2,1),Pos(3,1)), List(Down,Left,Up))
+      ))
+    }
+  }
+
+  test("newNeighboursOnly") {
+    new Level1 {
+      assert(newNeighborsOnly(
+        Set(
+          (Block(Pos(1,2),Pos(1,3)), List(Right,Left,Up)),
+          (Block(Pos(2,1),Pos(3,1)), List(Down,Left,Up))
+        ).toStream,Set(Block(Pos(1,2),Pos(1,3)), Block(Pos(1,1),Pos(1,1)))
+      ).toSet ===  Set((Block(Pos(2,1),Pos(3,1)), List(Down,Left,Up))))
     }
   }
 }
